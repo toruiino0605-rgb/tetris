@@ -241,32 +241,26 @@
             body {
                 height: -webkit-fill-available;
             }
-            #game-container {
-                min-height: -webkit-fill-available;
-            }
         }
 
         /* タッチコントロールパッド */
         #touch-controls {
             display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
             width: 100%;
-            z-index: 10;
-            padding: 10px 15px 20px;
-            background: rgba(5, 10, 30, 0.85);
-            backdrop-filter: blur(10px);
+            padding: 6px 10px 8px;
+            background: rgba(5, 10, 30, 0.9);
             border-top: 1px solid rgba(64, 224, 208, 0.3);
+            flex-shrink: 0;
         }
 
         .touch-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 6px;
+            margin-bottom: 6px;
         }
+        .touch-row:last-child { margin-bottom: 0; }
 
         .touch-btn {
             flex: 1;
@@ -274,10 +268,10 @@
             border: 1.5px solid rgba(64, 224, 208, 0.4);
             border-radius: 10px;
             color: #40e0d0;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             padding: 0;
-            height: 52px;
+            height: 46px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -288,8 +282,7 @@
             touch-action: manipulation;
         }
 
-        .touch-btn:active,
-        .touch-btn.pressed {
+        .touch-btn:active {
             background: rgba(64, 224, 208, 0.4);
             border-color: rgba(64, 224, 208, 0.8);
             transform: scale(0.95);
@@ -301,81 +294,95 @@
             color: #daa520;
             flex: 2;
         }
-
-        .touch-btn.btn-drop:active {
-            background: rgba(218, 165, 32, 0.5);
-        }
+        .touch-btn.btn-drop:active { background: rgba(218, 165, 32, 0.5); }
 
         .touch-btn.btn-hold {
             background: rgba(147, 112, 219, 0.2);
             border-color: rgba(147, 112, 219, 0.5);
             color: #9370db;
         }
-
-        .touch-btn.btn-hold:active {
-            background: rgba(147, 112, 219, 0.5);
-        }
+        .touch-btn.btn-hold:active { background: rgba(147, 112, 219, 0.5); }
 
         .touch-btn.btn-pause {
             background: rgba(255, 107, 107, 0.15);
             border-color: rgba(255, 107, 107, 0.4);
             color: #ff6b6b;
-            font-size: 13px;
+            font-size: 12px;
         }
 
-        /* モバイル時のレイアウト変更 */
+        /* モバイル時: body全体をflexの縦並びにして確実に収める */
         @media (max-width: 768px) {
-            #touch-controls {
-                display: block;
+            html, body {
+                height: 100%;
+                height: -webkit-fill-available;
+                overflow: hidden;
             }
 
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            #touch-controls {
+                display: flex;
+                flex-direction: column;
+                /* 固定位置ではなくフロー内に配置 */
+                position: static;
+            }
+
+            /* ゲームコンテナ: 残りの高さを全部使う */
             #game-container {
+                flex: 1;
                 flex-direction: column;
                 align-items: center;
                 justify-content: flex-start;
-                gap: 8px;
-                padding-top: 8px;
-                padding-bottom: 190px; /* タッチコントロール分の余白 */
+                gap: 6px;
+                padding: 6px 8px 4px;
                 height: auto;
-                min-height: 100vh;
-                min-height: -webkit-fill-available;
+                min-height: 0;
+                overflow: hidden;
             }
 
             #game-board {
-                padding: 10px;
+                padding: 6px;
+                flex-shrink: 0;
             }
 
             #canvas {
                 display: block;
             }
 
+            /* サイドパネル: 横並びでスコア・レベル・ライン・Next・Holdを表示 */
             #side-panel {
                 flex-direction: row;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 width: 100%;
-                max-width: 360px;
-                gap: 6px;
+                max-width: 420px;
+                gap: 5px;
+                flex-shrink: 0;
             }
 
             .info-box {
                 flex: 1;
-                min-width: 70px;
-                padding: 8px;
+                min-width: 0;
+                padding: 5px 3px;
             }
 
             .info-box h3 {
-                font-size: 10px;
-                margin-bottom: 4px;
+                font-size: 9px;
+                margin-bottom: 2px;
+                letter-spacing: 0;
             }
 
             .info-box .value {
-                font-size: 18px;
+                font-size: 15px;
             }
 
-            /* NEXTとHOLDを小さく */
+            /* NEXTとHOLDのキャンバス */
             #next-canvas, #hold-canvas {
-                width: 60px !important;
-                height: 60px !important;
+                width: 50px !important;
+                height: 50px !important;
+                margin: 2px auto !important;
             }
 
             /* サイドパネルのボタン類は非表示 */
@@ -383,34 +390,21 @@
                 display: none;
             }
 
-            #start-screen h1 {
-                font-size: 32px;
+            /* 背景・オーバーレイは固定のまま */
+            #background, #overlay {
+                position: fixed;
             }
 
-            #start-screen .subtitle {
-                font-size: 14px;
-            }
-
-            #start-btn {
-                font-size: 16px;
-                padding: 16px 40px;
-            }
-
-            /* スタート画面に操作ガイドをタッチ向けに変更 */
-            .controls-guide {
-                font-size: 11px;
-                text-align: center;
-                padding: 0 20px;
-            }
-
-            /* canvasサイズをモバイルに合わせて縮小 */
+            #start-screen h1 { font-size: 30px; }
+            #start-screen .subtitle { font-size: 13px; }
+            #start-btn { font-size: 15px; padding: 14px 35px; }
+            .controls-guide { font-size: 11px; text-align: center; padding: 0 20px; }
         }
 
-        /* 小さいiPhone (SE等) 対応 */
+        /* 小さいiPhone (SE等) */
         @media (max-width: 380px) {
-            #game-container {
-                padding-bottom: 180px;
-            }
+            .touch-btn { height: 42px; font-size: 16px; }
+            #touch-controls { padding: 5px 8px 6px; }
         }
     </style>
 </head>
@@ -492,17 +486,41 @@
 
     <!-- タッチコントロール（モバイル用） -->
     <div id="touch-controls">
+        <!-- HOLDピース表示 + ユーティリティ -->
         <div class="touch-row">
-            <button class="touch-btn btn-hold" id="btn-hold" ontouchstart="touchAction('hold')" ontouchend="touchEnd(event)">HOLD</button>
-            <button class="touch-btn btn-drop" id="btn-drop" ontouchstart="touchAction('hardDrop')" ontouchend="touchEnd(event)">⬇ DROP</button>
-            <button class="touch-btn btn-pause" id="btn-pause" ontouchstart="touchAction('pause')" ontouchend="touchEnd(event)">⏸ PAUSE</button>
+            <div id="mobile-hold-box" style="display:flex;align-items:center;gap:6px;flex:1;">
+                <div style="color:#9370db;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;line-height:1.2;">HOLD</div>
+                <canvas id="mobile-hold-canvas" width="44" height="44" style="border:1px solid rgba(147,112,219,0.5);border-radius:5px;background:rgba(0,0,20,0.6);"></canvas>
+            </div>
+            <div id="mobile-info" style="display:flex;gap:6px;flex:2;justify-content:flex-end;">
+                <div style="text-align:center;">
+                    <div style="color:#40e0d0;font-size:9px;letter-spacing:1px;">SCORE</div>
+                    <div id="mobile-score" style="color:#daa520;font-size:14px;font-weight:bold;">0</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="color:#40e0d0;font-size:9px;letter-spacing:1px;">LV</div>
+                    <div id="mobile-level" style="color:#daa520;font-size:14px;font-weight:bold;">1</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="color:#40e0d0;font-size:9px;letter-spacing:1px;">LINES</div>
+                    <div id="mobile-lines" style="color:#daa520;font-size:14px;font-weight:bold;">0</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="color:#40e0d0;font-size:9px;letter-spacing:1px;">NEXT</div>
+                    <canvas id="mobile-next-canvas" width="44" height="44" style="border:1px solid rgba(64,224,208,0.4);border-radius:5px;background:rgba(0,0,20,0.6);"></canvas>
+                </div>
+            </div>
+            <button class="touch-btn btn-pause" style="flex:0 0 64px;" ontouchstart="touchAction('pause')" ontouchend="touchEnd(event)">⏸<br><span style="font-size:9px;">PAUSE</span></button>
         </div>
+        <!-- 操作ボタン -->
         <div class="touch-row">
-            <button class="touch-btn" id="btn-left" ontouchstart="startRepeat('left')" ontouchend="stopRepeat()">◀</button>
-            <button class="touch-btn" id="btn-rotL" ontouchstart="touchAction('rotateL')" ontouchend="touchEnd(event)">↺</button>
-            <button class="touch-btn" id="btn-down" ontouchstart="startRepeat('down')" ontouchend="stopRepeat()">▼</button>
-            <button class="touch-btn" id="btn-rotR" ontouchstart="touchAction('rotateR')" ontouchend="touchEnd(event)">↻</button>
-            <button class="touch-btn" id="btn-right" ontouchstart="startRepeat('right')" ontouchend="stopRepeat()">▶</button>
+            <button class="touch-btn btn-hold" ontouchstart="touchAction('hold')" ontouchend="touchEnd(event)">HOLD</button>
+            <button class="touch-btn" ontouchstart="startRepeat('left')" ontouchend="stopRepeat()">◀</button>
+            <button class="touch-btn" ontouchstart="touchAction('rotateL')" ontouchend="touchEnd(event)">↺</button>
+            <button class="touch-btn" ontouchstart="startRepeat('down')" ontouchend="stopRepeat()">▼</button>
+            <button class="touch-btn" ontouchstart="touchAction('rotateR')" ontouchend="touchEnd(event)">↻</button>
+            <button class="touch-btn" ontouchstart="startRepeat('right')" ontouchend="stopRepeat()">▶</button>
+            <button class="touch-btn btn-drop" style="flex:1.2;" ontouchstart="touchAction('hardDrop')" ontouchend="touchEnd(event)">⬇DROP</button>
         </div>
     </div>
     <audio id="bgm" loop>
@@ -614,55 +632,6 @@
             };
         }
 
-        // ========================================
-        // ボード描画
-        // ========================================
-        function drawBoard() {
-            ctx.fillStyle = 'rgba(0, 0, 20, 0.8)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // グリッド線
-            ctx.strokeStyle = 'rgba(64, 224, 208, 0.1)';
-            ctx.lineWidth = 1;
-            for (let row = 0; row <= ROWS; row++) {
-                ctx.beginPath();
-                ctx.moveTo(0, row * BLOCK_SIZE);
-                ctx.lineTo(COLS * BLOCK_SIZE, row * BLOCK_SIZE);
-                ctx.stroke();
-            }
-            for (let col = 0; col <= COLS; col++) {
-                ctx.beginPath();
-                ctx.moveTo(col * BLOCK_SIZE, 0);
-                ctx.lineTo(col * BLOCK_SIZE, ROWS * BLOCK_SIZE);
-                ctx.stroke();
-            }
-
-            // 固定されたブロック
-            for (let row = 0; row < ROWS; row++) {
-                for (let col = 0; col < COLS; col++) {
-                    if (board[row][col]) {
-                        drawBlock(col, row, board[row][col]);
-                    }
-                }
-            }
-        }
-
-        // ========================================
-        // ブロック描画
-        // ========================================
-        function drawBlock(x, y, color) {
-            ctx.fillStyle = color;
-            ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-            
-            // ハイライト効果
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 2, BLOCK_SIZE - 2);
-            
-            // シャドウ
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.fillRect(x * BLOCK_SIZE + BLOCK_SIZE - 4, y * BLOCK_SIZE + 4, 4, BLOCK_SIZE - 4);
-        }
 
         // ========================================
         // 現在のピース描画
@@ -701,6 +670,25 @@
                     }
                 });
             });
+
+            // モバイル用
+            const mc = document.getElementById('mobile-next-canvas');
+            if (mc) {
+                const mCtx = mc.getContext('2d');
+                const bs = Math.floor(Math.min(mc.width, mc.height) / Math.max(nextPiece.shape[0].length, nextPiece.shape.length));
+                const ox = (mc.width - nextPiece.shape[0].length * bs) / 2;
+                const oy = (mc.height - nextPiece.shape.length * bs) / 2;
+                mCtx.fillStyle = 'rgba(0,0,20,0.6)';
+                mCtx.fillRect(0, 0, mc.width, mc.height);
+                nextPiece.shape.forEach((row, dy) => {
+                    row.forEach((value, dx) => {
+                        if (value) {
+                            mCtx.fillStyle = nextPiece.color;
+                            mCtx.fillRect(ox + dx * bs, oy + dy * bs, bs - 1, bs - 1);
+                        }
+                    });
+                });
+            }
         }
 
         // ========================================
@@ -710,7 +698,12 @@
             holdCtx.fillStyle = 'rgba(0, 0, 20, 0.5)';
             holdCtx.fillRect(0, 0, holdCanvas.width, holdCanvas.height);
 
-            if (!holdPiece) return;
+            if (!holdPiece) {
+                // モバイル用もクリア
+                const mc = document.getElementById('mobile-hold-canvas');
+                if (mc) { const mCtx = mc.getContext('2d'); mCtx.fillStyle='rgba(0,0,20,0.6)'; mCtx.fillRect(0,0,mc.width,mc.height); }
+                return;
+            }
 
             const piece = PIECES[holdPiece];
             const offsetX = (holdCanvas.width - piece.shape[0].length * 20) / 2;
@@ -726,6 +719,25 @@
                     }
                 });
             });
+
+            // モバイル用
+            const mc = document.getElementById('mobile-hold-canvas');
+            if (mc) {
+                const mCtx = mc.getContext('2d');
+                const bs = Math.floor(Math.min(mc.width, mc.height) / Math.max(piece.shape[0].length, piece.shape.length));
+                const ox = (mc.width - piece.shape[0].length * bs) / 2;
+                const oy = (mc.height - piece.shape.length * bs) / 2;
+                mCtx.fillStyle = 'rgba(0,0,20,0.6)';
+                mCtx.fillRect(0, 0, mc.width, mc.height);
+                piece.shape.forEach((row, dy) => {
+                    row.forEach((value, dx) => {
+                        if (value) {
+                            mCtx.fillStyle = piece.color;
+                            mCtx.fillRect(ox + dx * bs, oy + dy * bs, bs - 1, bs - 1);
+                        }
+                    });
+                });
+            }
         }
 
         // ========================================
@@ -917,6 +929,13 @@
             document.getElementById('score').textContent = score;
             document.getElementById('level').textContent = level;
             document.getElementById('lines').textContent = lines;
+            // モバイル用
+            const ms = document.getElementById('mobile-score');
+            const ml = document.getElementById('mobile-level');
+            const mli = document.getElementById('mobile-lines');
+            if (ms) ms.textContent = score;
+            if (ml) ml.textContent = level;
+            if (mli) mli.textContent = lines;
         }
 
         // ========================================
@@ -1072,23 +1091,30 @@
         // モバイル対応: キャンバスサイズ調整
         // ========================================
         function resizeCanvasForMobile() {
-            if (window.innerWidth <= 768) {
-                const maxW = Math.min(window.innerWidth - 40, 320);
-                const blockSize = Math.floor(maxW / COLS);
-                const newW = blockSize * COLS;
-                const newH = blockSize * ROWS;
+            if (window.innerWidth > 768) return;
 
-                canvas.width = newW;
-                canvas.height = newH;
-                canvas.style.width = newW + 'px';
-                canvas.style.height = newH + 'px';
+            // タッチコントロールの高さを取得（まだ表示前なら推定値）
+            const touchCtrl = document.getElementById('touch-controls');
+            const touchH = touchCtrl ? touchCtrl.offsetHeight || 120 : 120;
 
-                // BLOCK_SIZEをグローバルに更新
-                window._mobileBlockSize = blockSize;
+            // 使える縦方向の高さ: ビューポート - タッチコントロール - サイドパネル推定 - 余白
+            const sidePanelH = 70; // スコア等の横並びパネル
+            const paddings = 30;
+            const availH = window.innerHeight - touchH - sidePanelH - paddings;
+            const availW = window.innerWidth - 20;
 
-                // drawBlock等をオーバーライド
-                window._origDrawBlock = null;
-            }
+            // ブロックサイズはどちらかの制約に合わせる
+            const bsByH = Math.floor(availH / ROWS);
+            const bsByW = Math.floor(availW / COLS);
+            const bs = Math.min(bsByH, bsByW, 30);
+
+            const newW = bs * COLS;
+            const newH = bs * ROWS;
+
+            canvas.width = newW;
+            canvas.height = newH;
+
+            window._mobileBlockSize = bs;
         }
 
         // BLOCK_SIZEのモバイル対応（動的に差し替え）
@@ -1096,8 +1122,7 @@
             return window._mobileBlockSize || BLOCK_SIZE;
         }
 
-        // drawBlockをモバイル対応版に差し替え
-        const _origDrawBlock = drawBlock;
+        // drawBlockをモバイル対応版に差し替え（元のdrawBlockを上書き）
         function drawBlock(x, y, color) {
             const bs = getBlockSize();
             ctx.fillStyle = color;
