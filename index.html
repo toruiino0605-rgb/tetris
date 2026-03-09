@@ -232,6 +232,186 @@
         .controls-guide strong {
             color: #40e0d0;
         }
+
+        /* ========================================
+           モバイル・iPhone対応
+        ======================================== */
+        /* iOSのSafariのアドレスバーを考慮 */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                height: -webkit-fill-available;
+            }
+            #game-container {
+                min-height: -webkit-fill-available;
+            }
+        }
+
+        /* タッチコントロールパッド */
+        #touch-controls {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            padding: 10px 15px 20px;
+            background: rgba(5, 10, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .touch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .touch-btn {
+            flex: 1;
+            background: rgba(64, 224, 208, 0.15);
+            border: 1.5px solid rgba(64, 224, 208, 0.4);
+            border-radius: 10px;
+            color: #40e0d0;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 0;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .touch-btn:active,
+        .touch-btn.pressed {
+            background: rgba(64, 224, 208, 0.4);
+            border-color: rgba(64, 224, 208, 0.8);
+            transform: scale(0.95);
+        }
+
+        .touch-btn.btn-drop {
+            background: rgba(218, 165, 32, 0.2);
+            border-color: rgba(218, 165, 32, 0.5);
+            color: #daa520;
+            flex: 2;
+        }
+
+        .touch-btn.btn-drop:active {
+            background: rgba(218, 165, 32, 0.5);
+        }
+
+        .touch-btn.btn-hold {
+            background: rgba(147, 112, 219, 0.2);
+            border-color: rgba(147, 112, 219, 0.5);
+            color: #9370db;
+        }
+
+        .touch-btn.btn-hold:active {
+            background: rgba(147, 112, 219, 0.5);
+        }
+
+        .touch-btn.btn-pause {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: rgba(255, 107, 107, 0.4);
+            color: #ff6b6b;
+            font-size: 13px;
+        }
+
+        /* モバイル時のレイアウト変更 */
+        @media (max-width: 768px) {
+            #touch-controls {
+                display: block;
+            }
+
+            #game-container {
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 8px;
+                padding-top: 8px;
+                padding-bottom: 190px; /* タッチコントロール分の余白 */
+                height: auto;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+
+            #game-board {
+                padding: 10px;
+            }
+
+            #canvas {
+                display: block;
+            }
+
+            #side-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                width: 100%;
+                max-width: 360px;
+                gap: 6px;
+            }
+
+            .info-box {
+                flex: 1;
+                min-width: 70px;
+                padding: 8px;
+            }
+
+            .info-box h3 {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .info-box .value {
+                font-size: 18px;
+            }
+
+            /* NEXTとHOLDを小さく */
+            #next-canvas, #hold-canvas {
+                width: 60px !important;
+                height: 60px !important;
+            }
+
+            /* サイドパネルのボタン類は非表示 */
+            #side-panel .controls {
+                display: none;
+            }
+
+            #start-screen h1 {
+                font-size: 32px;
+            }
+
+            #start-screen .subtitle {
+                font-size: 14px;
+            }
+
+            #start-btn {
+                font-size: 16px;
+                padding: 16px 40px;
+            }
+
+            /* スタート画面に操作ガイドをタッチ向けに変更 */
+            .controls-guide {
+                font-size: 11px;
+                text-align: center;
+                padding: 0 20px;
+            }
+
+            /* canvasサイズをモバイルに合わせて縮小 */
+        }
+
+        /* 小さいiPhone (SE等) 対応 */
+        @media (max-width: 380px) {
+            #game-container {
+                padding-bottom: 180px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -246,8 +426,8 @@
         <button id="start-btn">START GAME</button>
         <div class="controls-guide">
             <strong>← →</strong> Move | <strong>↓</strong> Soft Drop | <strong>Space</strong> Hard Drop<br>
-            <strong>↑ / X</strong> Rotate Right | <strong>Z</strong> Rotate Left<br>
-            <strong>C</strong> Hold | <strong>P</strong> Pause | <strong>R</strong> Restart
+            <strong>↑ / X</strong> Rotate Right | <strong>Z</strong> Rotate Left | <strong>C</strong> Hold<br>
+            📱 <strong>Mobile:</strong> On-screen buttons below the game
         </div>
     </div>
 
@@ -310,7 +490,21 @@
         </div>
     </div>
 
-    <!-- BGM Audio -->
+    <!-- タッチコントロール（モバイル用） -->
+    <div id="touch-controls">
+        <div class="touch-row">
+            <button class="touch-btn btn-hold" id="btn-hold" ontouchstart="touchAction('hold')" ontouchend="touchEnd(event)">HOLD</button>
+            <button class="touch-btn btn-drop" id="btn-drop" ontouchstart="touchAction('hardDrop')" ontouchend="touchEnd(event)">⬇ DROP</button>
+            <button class="touch-btn btn-pause" id="btn-pause" ontouchstart="touchAction('pause')" ontouchend="touchEnd(event)">⏸ PAUSE</button>
+        </div>
+        <div class="touch-row">
+            <button class="touch-btn" id="btn-left" ontouchstart="startRepeat('left')" ontouchend="stopRepeat()">◀</button>
+            <button class="touch-btn" id="btn-rotL" ontouchstart="touchAction('rotateL')" ontouchend="touchEnd(event)">↺</button>
+            <button class="touch-btn" id="btn-down" ontouchstart="startRepeat('down')" ontouchend="stopRepeat()">▼</button>
+            <button class="touch-btn" id="btn-rotR" ontouchstart="touchAction('rotateR')" ontouchend="touchEnd(event)">↻</button>
+            <button class="touch-btn" id="btn-right" ontouchstart="startRepeat('right')" ontouchend="stopRepeat()">▶</button>
+        </div>
+    </div>
     <audio id="bgm" loop>
         <source src="assets/korobeiniki.mp3" type="audio/mpeg">
     </audio>
@@ -772,6 +966,7 @@
             document.getElementById('game-container').style.display = 'flex';
             document.getElementById('game-over').style.display = 'none';
             
+            resizeCanvasForMobile();
             init();
             
             // BGM再生
@@ -872,6 +1067,158 @@
         // スタートボタン
         // ========================================
         document.getElementById('start-btn').addEventListener('click', startGame);
+
+        // ========================================
+        // モバイル対応: キャンバスサイズ調整
+        // ========================================
+        function resizeCanvasForMobile() {
+            if (window.innerWidth <= 768) {
+                const maxW = Math.min(window.innerWidth - 40, 320);
+                const blockSize = Math.floor(maxW / COLS);
+                const newW = blockSize * COLS;
+                const newH = blockSize * ROWS;
+
+                canvas.width = newW;
+                canvas.height = newH;
+                canvas.style.width = newW + 'px';
+                canvas.style.height = newH + 'px';
+
+                // BLOCK_SIZEをグローバルに更新
+                window._mobileBlockSize = blockSize;
+
+                // drawBlock等をオーバーライド
+                window._origDrawBlock = null;
+            }
+        }
+
+        // BLOCK_SIZEのモバイル対応（動的に差し替え）
+        function getBlockSize() {
+            return window._mobileBlockSize || BLOCK_SIZE;
+        }
+
+        // drawBlockをモバイル対応版に差し替え
+        const _origDrawBlock = drawBlock;
+        function drawBlock(x, y, color) {
+            const bs = getBlockSize();
+            ctx.fillStyle = color;
+            ctx.fillRect(x * bs, y * bs, bs, bs);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x * bs + 1, y * bs + 1, bs - 2, bs - 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(x * bs + bs - 4, y * bs + 4, 4, bs - 4);
+        }
+
+        function drawBoard() {
+            const bs = getBlockSize();
+            ctx.fillStyle = 'rgba(0, 0, 20, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(64, 224, 208, 0.1)';
+            ctx.lineWidth = 1;
+            for (let row = 0; row <= ROWS; row++) {
+                ctx.beginPath(); ctx.moveTo(0, row * bs); ctx.lineTo(COLS * bs, row * bs); ctx.stroke();
+            }
+            for (let col = 0; col <= COLS; col++) {
+                ctx.beginPath(); ctx.moveTo(col * bs, 0); ctx.lineTo(col * bs, ROWS * bs); ctx.stroke();
+            }
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col]) drawBlock(col, row, board[row][col]);
+                }
+            }
+        }
+
+        // ========================================
+        // タッチ操作
+        // ========================================
+        let repeatTimer = null;
+        let repeatInterval = null;
+
+        function touchAction(action) {
+            if (gameOver && action !== 'pause') return;
+            switch(action) {
+                case 'left': move(-1); break;
+                case 'right': move(1); break;
+                case 'down': moveDown(); break;
+                case 'hardDrop': hardDrop(); break;
+                case 'rotateR': rotate(1); break;
+                case 'rotateL': rotate(-1); break;
+                case 'hold': hold(); break;
+                case 'pause': togglePause(); break;
+            }
+        }
+
+        function touchEnd(e) {
+            e.preventDefault();
+        }
+
+        function startRepeat(action) {
+            touchAction(action);
+            repeatTimer = setTimeout(() => {
+                repeatInterval = setInterval(() => touchAction(action), 80);
+            }, 200);
+        }
+
+        function stopRepeat() {
+            clearTimeout(repeatTimer);
+            clearInterval(repeatInterval);
+            repeatTimer = null;
+            repeatInterval = null;
+        }
+
+        // スワイプジェスチャー対応
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let swipeLocked = false;
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const t = e.touches[0];
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            touchStartTime = Date.now();
+            swipeLocked = false;
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (swipeLocked) return;
+            const t = e.touches[0];
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+
+            if (absDx > 20 && absDx > absDy) {
+                touchAction(dx > 0 ? 'right' : 'left');
+                touchStartX = t.clientX;
+            } else if (absDy > 25 && absDy > absDx) {
+                touchAction('down');
+                touchStartY = t.clientY;
+            }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const elapsed = Date.now() - touchStartTime;
+            const t = e.changedTouches[0];
+            const dx = Math.abs(t.clientX - touchStartX);
+            const dy = Math.abs(t.clientY - touchStartY);
+            // タップで回転
+            if (elapsed < 200 && dx < 10 && dy < 10) {
+                rotate(1);
+            }
+        }, { passive: false });
+
+        // リサイズ時の対応
+        window.addEventListener('resize', () => {
+            resizeCanvasForMobile();
+            if (currentPiece) render();
+        });
+
+        // 初回ロード時にリサイズ
+        resizeCanvasForMobile();
     </script>
 </body>
 </html>
